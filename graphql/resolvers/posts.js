@@ -37,7 +37,7 @@ module.exports = {
                 createdAt: new Date().toISOString 
             })
 
-            const post = await newPost
+            const post = await newPost.save()
             return post
         }
     }
