@@ -1,31 +1,15 @@
-const {ApolloServer} = require('apollo-server')
+const {ApolloServer, PubSub} = require('apollo-server')
 const mongoose = require("mongoose")
 require("dotenv").config()
 
-
-// const Post = require("./models/post")
-// const User = require("./models/user")
-
 const typeDefs = require("./graphql/typeDefs")
 const resolvers = require("./graphql/resolvers")
-
-// const resolvers = {
-//     Query: {
-//       async getPosts(){
-//           try{
-//               const posts = await Post.find()
-//               return posts
-//           } catch (err){
-//                 throw new Error(err)
-//             }
-//         }
-//     }
-// }
+const pubsub = new PubSub()
 
 const server = new ApolloServer({
     typeDefs, 
     resolvers,
-    context: ({req}) => ({req})
+    context: ({req}) => ({req, pubsub})
 })
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })

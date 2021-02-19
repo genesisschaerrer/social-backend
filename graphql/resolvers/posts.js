@@ -1,5 +1,6 @@
 const {AuthenticationError} = require("apollo-server")
 const { argsToArgsConfig } = require("graphql/type/definition")
+var moment = require("moment")
 
 const Post = require("../../models/post")
 const checkAuth = require("../../utils/check-auth")
@@ -29,7 +30,7 @@ module.exports = {
     },
 
     Mutation: {
-        async createPost(_, {body}, context){
+        async createPost(_, {body, lotName, status, image}, context){
             const user = checkAuth(context)
             
             if(body.trim() === ""){
@@ -40,10 +41,16 @@ module.exports = {
                 body,
                 user: user.id,
                 username: user.username,
-                createdAt: new Date().toISOString() 
+                lotName,
+                status,
+                image,
+                createdAt: moment().format('MMMM Do YYYY, h:mm a')
             })
 
             const post = await newPost.save()
+            context.pubsub.publish('NEW_POST', {
+                newPost: post
+              })
             return post
         }, 
         async deletePost(_, {postId}, context){
@@ -60,6 +67,11 @@ module.exports = {
             } catch(error){
                 throw new Error(error)
             }
+        }
+    },
+    Subscription: {
+        newPost: {
+          subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_POST')
         }
     }
 }

@@ -1,6 +1,7 @@
 const Post = require("../../models/post")
 const checkAuth = require("../../utils/check-auth")
 const {AuthenticationError, UserInputError} = require("apollo-server")
+var moment = require("moment")
 
 
 
@@ -21,7 +22,7 @@ module.exports = {
                 post.comments.unshift({
                     body,
                     username,
-                    createdAt: new Date().toISOString()
+                    createdAt: moment().format('MMMM Do YYYY, h:mm a')
                 })
                 await post.save()
                 return post
