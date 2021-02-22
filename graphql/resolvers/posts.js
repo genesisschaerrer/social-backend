@@ -32,6 +32,18 @@ module.exports = {
     Mutation: {
         async createPost(_, {body, lotName, status, image}, context){
             const user = checkAuth(context)
+
+            if(lotName.trim() === ""){
+                throw new Error("Post lot name must not be empty")
+            }
+
+            if(status.trim() === ""){
+                throw new Error("Post status must not be empty")
+            }
+
+            if(image.trim() === ""){
+                throw new Error("Post submit image")
+            }
             
             if(body.trim() === ""){
                 throw new Error("Post body must not be empty")
